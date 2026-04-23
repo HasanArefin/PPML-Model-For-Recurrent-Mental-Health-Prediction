@@ -1,0 +1,26 @@
+import re
+import nltk
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+
+# Preprocess text: Lowercasing, removing special characters, and optional stopword removal
+stop_words = set(stopwords.words('english')) 
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'\W', ' ', text)  
+    text = re.sub(r'\s+', ' ', text)  
+    text = ' '.join([word for word in text.split() if word not in stop_words])
+    return text
+
+data['statement'] = data['statement'].apply(clean_text)
+print("Successful")
+
+
+
+# Shuffle the dataset
+data = data.sample(frac=1, random_state=42).reset_index(drop=True)
+print("Data shuffled successfully!")
+
+# Fill missing values in the 'statement' column
+data['statement'] = data['statement'].fillna('')
+print("Missing values filled.")
