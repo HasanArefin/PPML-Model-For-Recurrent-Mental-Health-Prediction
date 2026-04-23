@@ -1,0 +1,30 @@
+# Encode the target variable (status)
+label_encoder = LabelEncoder()
+data['status_encoded'] = label_encoder.fit_transform(data['status'])
+
+
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+# Tokenize the text
+tokenizer = Tokenizer(num_words=10000, oov_token="<OOV>")
+tokenizer.fit_on_texts(data['statement'])
+
+max_sequence_length = 100  # Max sequence length for LSTM
+
+# Convert text to sequences and pad
+sequences = tokenizer.texts_to_sequences(data['statement'])
+padded_sequences = pad_sequences(sequences, maxlen=max_sequence_length, padding='post')
+print("Text tokenized and padded.")
+
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(
+    padded_sequences, data['status_encoded'], test_size=0.2, random_state=42
+)
+
+# Convert target variable to one-hot encoding
+num_classes = len(label_encoder.classes_)
+y_train = to_categorical(y_train, num_classes=num_classes)
+y_test = to_categorical(y_test, num_classes=num_classes)
+print("Data split into training and testing sets.")
