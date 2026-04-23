@@ -1,0 +1,50 @@
+import os
+
+# Path to the GloVe file
+embedding_file_path = "C:/Users/atika/CS/glove.6B/glove.6B.200d.txt"
+
+# Initialize the embedding index
+embedding_index = {}
+with open(embedding_file_path, encoding='utf8') as file:
+    for line in file:
+        values = line.split()
+        word = values[0]
+        coefs = np.asarray(values[1:], dtype='float32')
+        embedding_index[word] = coefs
+
+print("GloVe embeddings loaded successfully!")
+
+
+
+import numpy as np
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+# Load pretrained GloVe embeddings
+embedding_dim = 200
+embedding_file_path = "C:/Users/atika/CS/glove.6B/glove.6B.200d.txt"
+
+# Initialize the embedding index
+embedding_index = {}
+with open(embedding_file_path, encoding='utf8') as file:
+    for line in file:
+        values = line.split()
+        word = values[0]
+        coefs = np.asarray(values[1:], dtype='float32')
+        embedding_index[word] = coefs
+
+print(f"Loaded {len(embedding_index)} word vectors.")
+
+# Create an embedding matrix
+word_index = tokenizer.word_index
+num_words = min(len(word_index) + 1, 10000)
+embedding_matrix = np.zeros((num_words, embedding_dim))
+
+for word, i in word_index.items():
+    if i >= 10000:
+        continue
+    embedding_vector = embedding_index.get(word)
+    if embedding_vector is not None:
+        embedding_matrix[i] = embedding_vector
+
+print("Embedding matrix created.")
