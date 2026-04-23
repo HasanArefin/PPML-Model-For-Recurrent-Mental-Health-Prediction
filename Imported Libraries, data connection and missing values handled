@@ -1,0 +1,26 @@
+import pandas as pd
+
+# Load the dataset
+file_path = "C:/Users/atika/CS/Combined Data.csv"  # Adjust path if needed
+data = pd.read_csv(file_path, encoding='latin1')
+print("Dataset loaded successfully!")
+
+
+import numpy as np
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from tensorflow.keras.utils import to_categorical
+import tenseal as ts
+print("successful")
+
+
+# Inspect the first few rows
+print(data.head())
+
+# Check for missing values
+print(data.isnull().sum())
+
+# Handle missing values in the 'statement' column
+data = data.dropna(subset=['statement']).reset_index(drop=True)
+
+print("Missing values handled.")
