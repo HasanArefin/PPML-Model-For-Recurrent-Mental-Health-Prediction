@@ -1,0 +1,47 @@
+# smaller subset of the dataset for SMOTE
+from imblearn.over_sampling import SMOTE
+subset_size = 5000  
+X_train_subset = X_train[:subset_size]
+y_train_subset = y_train[:subset_size]
+
+#  SMOTE on the subset
+smote = SMOTE(random_state=42)
+X_train_balanced_subset, y_train_balanced_subset = smote.fit_resample(X_train_subset, y_train_subset)
+
+print("Balanced subset training set shape:", X_train_balanced_subset.shape, y_train_balanced_subset.shape)
+
+
+
+from sklearn.utils.class_weight import compute_class_weight 
+
+class_weights = compute_class_weight(
+    class_weight='balanced',
+    classes=np.unique(data['status_encoded']),
+    y=data['status_encoded']
+)
+class_weights = dict(enumerate(class_weights))
+print("Successful")
+
+
+
+import numpy as np
+import tenseal as ts
+
+# Create TenSEAL encryption context
+def create_encryption_context():
+    context = ts.context(ts.SCHEME_TYPE.CKKS, poly_modulus_degree=8192, coeff_mod_bit_sizes=[60, 40, 40, 60])
+    context.generate_galois_keys()
+    context.global_scale = 2**40
+    return context
+
+# Initialize encryption context
+context = create_encryption_context()
+print("Encryption context created.")
+
+# Encrypt dataset rows
+def encrypt_dataset(data, context):
+    return [ts.ckks_vector(context, row.astype(np.float64)) for row in data]
+
+# Encrypt the training data
+X_train_encrypted = encrypt_dataset(X_train, context)
+print("Training data encrypted.")
